@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Runic.CIL.Disassembler</AssemblyName>
+    <RootNamespace>Runic.CIL.Disassembler</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Runic.CIL.Disassembler\BitConverterLE.cs" Link="BitConverterLE.cs" />
+    <Compile Include="..\Runic.CIL.Disassembler\Disassembler.cs" Link="Disassembler.cs" />
+  </ItemGroup>
+</Project>
