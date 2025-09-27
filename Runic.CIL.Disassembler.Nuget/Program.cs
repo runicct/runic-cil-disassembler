@@ -43,6 +43,7 @@ static string CreateNuspec(string packageId, string version, string description,
     stringBuilder.AppendLine("    <language>en-US</language>");
     stringBuilder.AppendLine("    <tags>runic runicct compiler construction toolkit " + tags + "</tags>");
     stringBuilder.AppendLine("    <license type=\"expression\">MIT</license>");
+    stringBuilder.AppendLine("    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>");
     stringBuilder.AppendLine("  </metadata>");
     stringBuilder.AppendLine("</package>");
     return stringBuilder.ToString();
