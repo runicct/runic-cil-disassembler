@@ -36,8 +36,8 @@ static string CreateNuspec(string packageId, string version, string description,
     stringBuilder.AppendLine("    <id>" + packageId + "</id>");
     stringBuilder.AppendLine("    <version>" + version + "</version>");
     stringBuilder.AppendLine("    <title>" + packageId + "</title>");
-    stringBuilder.AppendLine("    <authors>cilcc</authors>");
-    stringBuilder.AppendLine("    <owners>cilcc</owners>");
+    stringBuilder.AppendLine("    <authors>runicct</authors>");
+    stringBuilder.AppendLine("    <owners>runicct</owners>");
     stringBuilder.AppendLine("    <description>" + description + "</description>");
     stringBuilder.AppendLine("    <projectUrl>https://github.com/runicct/runic-cil-disassembler</projectUrl>");
     stringBuilder.AppendLine("    <language>en-US</language>");
