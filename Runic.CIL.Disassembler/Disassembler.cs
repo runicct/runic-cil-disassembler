@@ -43,7 +43,7 @@ namespace Runic.CIL
         public virtual void LdNull(int offset) { }
         public virtual void NewObj(int offset, uint typeToken) { }
         public virtual void CopyObj(int offset, uint typeToken) { }
-        public virtual void LdObj(int offset, bool unaligned, uint typeToken) { }
+        public virtual void LdObj(int offset, bool volatilePrefix, int alignment, uint typeToken) { }
         public virtual void InitObj(int offset, uint typeToken) { }
         public virtual void NewArr(int offset, uint typeToken) { }
         public virtual void LdLen(int offset) { }
@@ -74,33 +74,33 @@ namespace Runic.CIL
         public virtual void BrTrue(int offset, int address) { }
         public virtual void Switch(int offset, int[] address) { }
         public virtual void Leave(int offset, int address) { }
-        public virtual void EndFault(int offset) { }
-        public virtual void LdIndU1(int offset) { }
-        public virtual void LdIndU2(int offset, bool unaligned) { }
-        public virtual void LdIndU4(int offset, bool unaligned) { }
-        public virtual void LdIndI1(int offset) { }
-        public virtual void LdIndI2(int offset, bool unaligned) { }
-        public virtual void LdIndI4(int offset, bool unaligned) { }
-        public virtual void LdIndI8(int offset, bool unaligned) { }
-        public virtual void LdIndI(int offset, bool unaligned) { }
-        public virtual void LdIndR4(int offset, bool unaligned) { }
-        public virtual void LdIndR8(int offset, bool unaligned) { }
-        public virtual void LdIndRef(int offset, bool unaligned) { }
-        public virtual void StIndI(int offset, bool unaligned) { }
-        public virtual void StIndI1(int offset) { }
-        public virtual void StIndI2(int offset, bool unaligned) { }
-        public virtual void StIndI4(int offset, bool unaligned) { }
-        public virtual void StIndI8(int offset, bool unaligned) { }
-        public virtual void StIndR4(int offset, bool unaligned) { }
-        public virtual void StIndR8(int offset, bool unaligned) { }
-        public virtual void StIndRef(int offset, bool unaligned) { }
-        public virtual void StObj(int offset, bool unaligned, uint typeToken) { }
-        public virtual void LdFld(int offset, bool noNullCheck, bool volatilePrefix, bool unaligned, uint fieldToken) { }
+        public virtual void EndFinally(int offset) { }
+        public virtual void LdIndU1(int offset, bool volatilePrefix) { }
+        public virtual void LdIndU2(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndU4(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndI1(int offset, bool volatilePrefix) { }
+        public virtual void LdIndI2(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndI4(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndI8(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndI(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndR4(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndR8(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void LdIndRef(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndI(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndI1(int offset, bool volatilePrefix) { }
+        public virtual void StIndI2(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndI4(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndI8(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndR4(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndR8(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StIndRef(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void StObj(int offset, bool volatilePrefix, int alignment, uint typeToken) { }
+        public virtual void LdFld(int offset, bool noNullCheck, bool volatilePrefix, int alignment, uint fieldToken) { }
         public virtual void LdFldA(int offset, uint fieldToken) { }
-        public virtual void LdSFld(int offset, uint fieldToken) { }
+        public virtual void LdSFld(int offset, bool volatilePrefix, uint fieldToken) { }
         public virtual void LdSFldA(int offset, uint fieldToken) { }
-        public virtual void StFld(int offset, bool noNullCheck, bool unaligned, uint fieldToken) { }
-        public virtual void StSFld(int offset, uint fieldToken) { }
+        public virtual void StFld(int offset, bool noNullCheck, bool volatilePrefix, int alignment, uint fieldToken) { }
+        public virtual void StSFld(int offset, bool volatilePrefix, uint fieldToken) { }
         public virtual void Add(int offset) { }
         public virtual void AddOvf(int offset) { }
         public virtual void AddOvfUn(int offset) { }
@@ -168,6 +168,7 @@ namespace Runic.CIL
         public virtual void LdElemR8(int offset, bool noNullCheck, bool noBoundCheck) { }
         public virtual void LdElemRef(int offset, bool noNullCheck, bool noBoundCheck) { }
         public virtual void StElem(int offset, bool noNullCheck, bool noTypeCheck, bool noBoundCheck, uint typeToken) { }
+        public virtual void StElemI(int offset, bool noNullCheck, bool noBoundCheck) { }
         public virtual void StElemI1(int offset, bool noNullCheck, bool noBoundCheck) { }
         public virtual void StElemI2(int offset, bool noNullCheck, bool noBoundCheck) { }
         public virtual void StElemI4(int offset, bool noNullCheck, bool noBoundCheck) { }
@@ -186,8 +187,8 @@ namespace Runic.CIL
         public virtual void LdStr(int offset, uint literalStringToken) { }
         public virtual void LdFtn(int offset, uint methodToken) { }
         public virtual void LdVirtFtn(int offset, bool noNullCheck, uint methodToken) { }
-        public virtual void CpBlk(int offset, bool unaligned) { }
-        public virtual void InitBlk(int offset, bool unaligned) { }
+        public virtual void CpBlk(int offset, bool volatilePrefix, int alignment) { }
+        public virtual void InitBlk(int offset, bool volatilePrefix, int alignment) { }
         public virtual void Box(int offset, uint typeToken) { }
         public virtual void Unbox(int offset, bool noTypeCheck, uint typeToken) { }
         public virtual void UnboxAny(int offset, uint typeToken) { }
@@ -202,18 +203,25 @@ namespace Runic.CIL
         public virtual void RefAnyType(int offset) { }
         public Disassembler() { }
 #if NET6_0_OR_GREATER
-        public void Disassemble(Span<byte> bytecode, int offset, int length)
+        /// <summary>
+        /// Disassembles the provided IL bytecode starting from the given offset up to (but not including) the end index.
+        /// </summary>
+        /// <param name="bytecode">the block to disassemble</param>
+        /// <param name="offset">the offset within the block where disassembly must begin</param>
+        /// <param name="end">the end (exclusive) offset</param>
+        public void Disassemble(Span<byte> bytecode, int offset, int end)
         {
             _aborted = false;
             bool volatilePrefix = false;
             bool unalignedPrefix = false;
+            int alignment = 0;
             bool tailPrefix = false;
             bool readonlyPrefix = false;
             bool noNullCheck = false;
             bool noTypeCheck = false;
             bool noRangeCheck = false;
             uint constrainedType = 0;
-            for (int n = offset; n < length;)
+            for (int n = offset; n < end;)
             {
                 int iloffset = n;
                 Fetch(iloffset);
@@ -258,7 +266,7 @@ namespace Runic.CIL
                     case 0x23 /* ldc.r8 */: LdcR8(iloffset, BitConverterLE.ToDouble(bytecode, n + 1)); n += 9; break;
                     case 0x25 /* dup */: Dup(iloffset); n++; break;
                     case 0x26 /* pop */: Pop(iloffset); n++; break;
-                    case 0x27 /* jmp */: Jmp(iloffset, BitConverterLE.ToUInt32(bytecode, n) + 1); n += 5; break;
+                    case 0x27 /* jmp */: Jmp(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x28 /* call */: Call(iloffset, tailPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); tailPrefix = false; n += 5; break;
                     case 0x29 /* calli */: Calli(iloffset, tailPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); tailPrefix = false; n += 5; break;
                     case 0x2A /* ret */: Ret(iloffset); n++; break;
@@ -299,24 +307,24 @@ namespace Runic.CIL
                             Switch(iloffset, labels);
                             break;
                         }
-                    case 0x46 /* ldind.i1 */: LdIndI1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x47 /* ldind.u1 */: LdIndU1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x48 /* ldind.u2 */: LdIndI2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x49 /* ldind.u2 */: LdIndU2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4A /* ldind.i4 */: LdIndI4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4B /* ldind.u4 */: LdIndU4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4C /* ldind.i8 */: LdIndI8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4D /* ldind.i */: LdIndI(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4E /* ldind.r4 */: LdIndR4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4F /* ldind.r8 */: LdIndR8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x50 /* ldind.ref */: LdIndRef(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x51 /* stind.ref */: StIndRef(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x52 /* stind.i1 */: StIndI1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x53 /* stind.i2 */: StIndI2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x54 /* stind.i4 */: StIndI4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x55 /* stind.i8 */: StIndI8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x56 /* stind.r4 */: StIndR4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x57 /* stind.r8 */: StIndR8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
+                    case 0x46 /* ldind.i1 */: LdIndI1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x47 /* ldind.u1 */: LdIndU1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x48 /* ldind.i2 */: LdIndI2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x49 /* ldind.u2 */: LdIndU2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4A /* ldind.i4 */: LdIndI4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4B /* ldind.u4 */: LdIndU4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4C /* ldind.i8 */: LdIndI8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4D /* ldind.i */: LdIndI(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4E /* ldind.r4 */: LdIndR4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4F /* ldind.r8 */: LdIndR8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x50 /* ldind.ref */: LdIndRef(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x51 /* stind.ref */: StIndRef(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x52 /* stind.i1 */: StIndI1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x53 /* stind.i2 */: StIndI2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x54 /* stind.i4 */: StIndI4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x55 /* stind.i8 */: StIndI8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x56 /* stind.r4 */: StIndR4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x57 /* stind.r8 */: StIndR8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
                     case 0x58 /* add */: Add(iloffset); n++; break;
                     case 0x59 /* sub */: Sub(iloffset); n++; break;
                     case 0x5A /* mul */: Mul(iloffset); n++; break;
@@ -342,7 +350,7 @@ namespace Runic.CIL
                     case 0x6E /* conv.u8 */: ConvU8(iloffset); n++; break;
                     case 0x6F /* callvirt */: CallVirt(iloffset, noNullCheck, constrainedType, tailPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); constrainedType = 0; noNullCheck = false; tailPrefix = false; n += 5; break;
                     case 0x70 /* copyobj */: CopyObj(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x71 /* ldobj */: LdObj(iloffset, unalignedPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; n += 5; break;
+                    case 0x71 /* ldobj */: LdObj(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverterLE.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; volatilePrefix = false; n += 5; break;
                     case 0x72 /* ldstr */: LdStr(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x73 /* newobj */: NewObj(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x74 /* castclass */: CastClass(iloffset, noTypeCheck, BitConverterLE.ToUInt32(bytecode, n + 1)); noTypeCheck = false; n += 5; break;
@@ -350,13 +358,13 @@ namespace Runic.CIL
                     case 0x76 /* conv.r.un */: ConvRUn(iloffset); n++; break;
                     case 0x79 /* unbox */: Unbox(iloffset, noTypeCheck, BitConverterLE.ToUInt32(bytecode, n + 1)); noTypeCheck = false; n += 5; break;
                     case 0x7A /* throw */: Throw(iloffset); n++; break;
-                    case 0x7B /* ldfld */: LdFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
+                    case 0x7B /* ldfld */: LdFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
                     case 0x7C /* ldflda */: LdFldA(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x7D /* stfld */: StFld(iloffset, noNullCheck, unalignedPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; unalignedPrefix = false; n += 5; break;
-                    case 0x7E /* ldsfld */: LdSFld(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
+                    case 0x7D /* stfld */: StFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
+                    case 0x7E /* ldsfld */: LdSFld(iloffset, volatilePrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); volatilePrefix = false; n += 5; break;
                     case 0x7F /* ldsflda */: LdSFldA(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x80 /* stsfld */: StSFld(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x81 /* stobj */: StObj(iloffset, unalignedPrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; n += 5; break;
+                    case 0x80 /* stsfld */: StSFld(iloffset, volatilePrefix, BitConverterLE.ToUInt32(bytecode, n + 1)); volatilePrefix = false; n += 5; break;
+                    case 0x81 /* stobj */: StObj(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverterLE.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; volatilePrefix = false; n += 5; break;
                     case 0x82 /* conv.ovf.i1.un	*/: ConvOvfI1Un(iloffset); n++; break;
                     case 0x83 /* conv.ovf.i2.un	*/: ConvOvfI2Un(iloffset); n++; break;
                     case 0x84 /* conv.ovf.i4.un	*/: ConvOvfI4Un(iloffset); n++; break;
@@ -382,6 +390,7 @@ namespace Runic.CIL
                     case 0x98 /* ldelem.r4 */: LdElemR4(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x99 /* ldelem.r8 */: LdElemR8(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9A /* ldelem.ref */: LdElemRef(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
+                    case 0x9B /* stelem.i */: StElemI(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9C /* stelem.i1 */: StElemI1(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9D /* stelem.i2 */: StElemI2(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9E /* stelem.i4 */: StElemI4(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
@@ -391,7 +400,7 @@ namespace Runic.CIL
                     case 0xA2 /* stelem.ref */: StElemRef(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0xA3 /* ldelem */: LdElem(iloffset, noNullCheck, noRangeCheck, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; noRangeCheck = false; n += 5; break;
                     case 0xA4 /* stelem */: StElem(iloffset, noNullCheck, noTypeCheck, noRangeCheck, BitConverterLE.ToUInt32(bytecode, n + 1)); noNullCheck = false; noTypeCheck = false; noRangeCheck = false; n += 5; break;
-                    case 0xA5 /* unbox.any*/: UnboxAny(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); ; n += 5; break;
+                    case 0xA5 /* unbox.any*/: UnboxAny(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0xB3: /* conv.ovf.i1 */ ConvOvfI1(iloffset); n++; break;
                     case 0xB4: /* conv.ovf.u1 */ ConvOvfU1(iloffset); n++; break;
                     case 0xB5: /* conv.ovf.i2 */ ConvOvfI2(iloffset); n++; break;
@@ -415,10 +424,10 @@ namespace Runic.CIL
                     case 0xD9 /* mul.ovf.un */: MulOvfUn(iloffset); n++; break;
                     case 0xDA /* sub.ovf */: SubOvf(iloffset); n++; break;
                     case 0xDB /* sub.ovf.un */: SubOvfUn(iloffset); n++; break;
-                    case 0xDC /* endfault */: EndFault(iloffset); n++; break;
+                    case 0xDC /* endfinally */: EndFinally(iloffset); n++; break;
                     case 0xDD /* leave */: Leave(iloffset, n + BitConverterLE.ToInt32(bytecode, n + 1) + 5); n += 5; break;
                     case 0xDE /* leave.s */: Leave(iloffset, n + (sbyte)bytecode[n + 1] + 2); n += 2; break;
-                    case 0xDF /* stind.i */: StIndI(iloffset, unalignedPrefix); n++; break;
+                    case 0xDF /* stind.i */: StIndI(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
                     case 0xE0 /* conv.u */: ConvU(iloffset); n++; break;
                     case 0xFE:
                         n++;
@@ -440,18 +449,28 @@ namespace Runic.CIL
                             case 0x0E /* stloc */: StLoc(iloffset, BitConverterLE.ToUInt16(bytecode, n + 1)); n += 3; break;
                             case 0x0F /* LocAlloc */: LocAlloc(iloffset); n++; break;
                             case 0x11 /* endfilter */: EndFilter(iloffset); n++; break;
-                            case 0x12 /* unaligned */: Nop(iloffset); unalignedPrefix = true; n++; break;
+                            case 0x12 /* unaligned */:
+                                switch (bytecode[n + 1])
+                                {
+                                    case 2: alignment = 2; break;
+                                    case 4: alignment = 4; break;
+                                    default: alignment = 1; break;
+                                }
+                                Nop(iloffset);
+                                unalignedPrefix = true;
+                                n += 2;
+                                break;
                             case 0x13 /* volatile */: Nop(iloffset); volatilePrefix = true; n++; break;
                             case 0x14 /* tail */: Nop(iloffset); tailPrefix = true; n++; break;
                             case 0x15 /* InitObj */: InitObj(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
                             case 0x16 /* constrained */: Nop(iloffset); constrainedType = BitConverterLE.ToUInt32(bytecode, n + 1); n += 5; break;
-                            case 0x17 /* cpblk */: CpBlk(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                            case 0x18 /* initblk */: InitBlk(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
+                            case 0x17 /* cpblk */: CpBlk(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                            case 0x18 /* initblk */: InitBlk(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
                             case 0x19 /* no. */:
-                                n++;
-                                if ((bytecode[n] & 0x01) != 0) { noTypeCheck = true; }
-                                if ((bytecode[n] & 0x02) != 0) { noRangeCheck = true; }
-                                if ((bytecode[n] & 0x04) != 0) { noNullCheck = true; }
+                                if ((bytecode[n + 1] & 0x01) != 0) { noTypeCheck = true; }
+                                if ((bytecode[n + 1] & 0x02) != 0) { noRangeCheck = true; }
+                                if ((bytecode[n + 1] & 0x04) != 0) { noNullCheck = true; }
+                                n += 2;
                                 break;
                             case 0x1A /* rethrow */: Rethrow(iloffset); n++; break;
                             case 0x1C /* sizeof */: SizeOf(iloffset, BitConverterLE.ToUInt32(bytecode, n + 1)); n += 5; break;
@@ -466,18 +485,25 @@ namespace Runic.CIL
             }
         }
 #endif
-        public void Disassemble(byte[] bytecode, int offset, int length)
+        /// <summary>
+        /// Disassembles the provided IL bytecode starting from the given offset up to (but not including) the end index.
+        /// </summary>
+        /// <param name="bytecode">the block to disassemble</param>
+        /// <param name="offset">the offset within the block where disassembly must begin</param>
+        /// <param name="end">the end (exclusive) offset</param>
+        public void Disassemble(byte[] bytecode, int offset, int end)
         {
             _aborted = false;
             bool volatilePrefix = false;
             bool unalignedPrefix = false;
+            int alignment = 0;
             bool tailPrefix = false;
             bool readonlyPrefix = false;
             bool noNullCheck = false;
             bool noTypeCheck = false;
             bool noRangeCheck = false;
             uint constrainedType = 0;
-            for (int n = offset; n < length;)
+            for (int n = offset; n < end;)
             {
                 int iloffset = n;
                 Fetch(iloffset);
@@ -522,7 +548,7 @@ namespace Runic.CIL
                     case 0x23 /* ldc.r8 */: LdcR8(iloffset, BitConverter.ToDouble(bytecode, n + 1)); n += 9; break;
                     case 0x25 /* dup */: Dup(iloffset); n++; break;
                     case 0x26 /* pop */: Pop(iloffset); n++; break;
-                    case 0x27 /* jmp */: Jmp(iloffset, BitConverter.ToUInt32(bytecode, n) + 1); n += 5; break;
+                    case 0x27 /* jmp */: Jmp(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x28 /* call */: Call(iloffset, tailPrefix, BitConverter.ToUInt32(bytecode, n + 1)); tailPrefix = false; n += 5; break;
                     case 0x29 /* calli */: Calli(iloffset, tailPrefix, BitConverter.ToUInt32(bytecode, n + 1)); tailPrefix = false; n += 5; break;
                     case 0x2A /* ret */: Ret(iloffset); n++; break;
@@ -563,24 +589,24 @@ namespace Runic.CIL
                             Switch(iloffset, labels);
                             break;
                         }
-                    case 0x46 /* ldind.i1 */: LdIndI1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x47 /* ldind.u1 */: LdIndU1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x48 /* ldind.u2 */: LdIndI2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x49 /* ldind.u2 */: LdIndU2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4A /* ldind.i4 */: LdIndI4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4B /* ldind.u4 */: LdIndU4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4C /* ldind.i8 */: LdIndI8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4D /* ldind.i */: LdIndI(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4E /* ldind.r4 */: LdIndR4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x4F /* ldind.r8 */: LdIndR8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x50 /* ldind.ref */: LdIndRef(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x51 /* stind.ref */: StIndRef(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x52 /* stind.i1 */: StIndI1(iloffset); unalignedPrefix = false; n++; break;
-                    case 0x53 /* stind.i2 */: StIndI2(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x54 /* stind.i4 */: StIndI4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x55 /* stind.i8 */: StIndI8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x56 /* stind.r4 */: StIndR4(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                    case 0x57 /* stind.r8 */: StIndR8(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
+                    case 0x46 /* ldind.i1 */: LdIndI1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x47 /* ldind.u1 */: LdIndU1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x48 /* ldind.i2 */: LdIndI2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x49 /* ldind.u2 */: LdIndU2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4A /* ldind.i4 */: LdIndI4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4B /* ldind.u4 */: LdIndU4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4C /* ldind.i8 */: LdIndI8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4D /* ldind.i */: LdIndI(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4E /* ldind.r4 */: LdIndR4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x4F /* ldind.r8 */: LdIndR8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x50 /* ldind.ref */: LdIndRef(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x51 /* stind.ref */: StIndRef(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x52 /* stind.i1 */: StIndI1(iloffset, volatilePrefix); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x53 /* stind.i2 */: StIndI2(iloffset, volatilePrefix, unalignedPrefix ? alignment : 2); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x54 /* stind.i4 */: StIndI4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x55 /* stind.i8 */: StIndI8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x56 /* stind.r4 */: StIndR4(iloffset, volatilePrefix, unalignedPrefix ? alignment : 4); unalignedPrefix = false; volatilePrefix = false; n++; break;
+                    case 0x57 /* stind.r8 */: StIndR8(iloffset, volatilePrefix, unalignedPrefix ? alignment : 8); unalignedPrefix = false; volatilePrefix = false; n++; break;
                     case 0x58 /* add */: Add(iloffset); n++; break;
                     case 0x59 /* sub */: Sub(iloffset); n++; break;
                     case 0x5A /* mul */: Mul(iloffset); n++; break;
@@ -606,7 +632,7 @@ namespace Runic.CIL
                     case 0x6E /* conv.u8 */: ConvU8(iloffset); n++; break;
                     case 0x6F /* callvirt */: CallVirt(iloffset, noNullCheck, constrainedType, tailPrefix, BitConverter.ToUInt32(bytecode, n + 1)); constrainedType = 0; noNullCheck = false; tailPrefix = false; n += 5; break;
                     case 0x70 /* copyobj */: CopyObj(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x71 /* ldobj */: LdObj(iloffset, unalignedPrefix, BitConverter.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; n += 5; break;
+                    case 0x71 /* ldobj */: LdObj(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverter.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; volatilePrefix = false; n += 5; break;
                     case 0x72 /* ldstr */: LdStr(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x73 /* newobj */: NewObj(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0x74 /* castclass */: CastClass(iloffset, noTypeCheck, BitConverter.ToUInt32(bytecode, n + 1)); noTypeCheck = false; n += 5; break;
@@ -614,13 +640,13 @@ namespace Runic.CIL
                     case 0x76 /* conv.r.un */: ConvRUn(iloffset); n++; break;
                     case 0x79 /* unbox */: Unbox(iloffset, noTypeCheck, BitConverter.ToUInt32(bytecode, n + 1)); noTypeCheck = false; n += 5; break;
                     case 0x7A /* throw */: Throw(iloffset); n++; break;
-                    case 0x7B /* ldfld */: LdFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
+                    case 0x7B /* ldfld */: LdFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
                     case 0x7C /* ldflda */: LdFldA(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x7D /* stfld */: StFld(iloffset, noNullCheck, unalignedPrefix, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; unalignedPrefix = false; n += 5; break;
-                    case 0x7E /* ldsfld */: LdSFld(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
+                    case 0x7D /* stfld */: StFld(iloffset, noNullCheck, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; volatilePrefix = false; unalignedPrefix = false; n += 5; break;
+                    case 0x7E /* ldsfld */: LdSFld(iloffset, volatilePrefix, BitConverter.ToUInt32(bytecode, n + 1)); volatilePrefix = false; n += 5; break;
                     case 0x7F /* ldsflda */: LdSFldA(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x80 /* stsfld */: StSFld(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
-                    case 0x81 /* stobj */: StObj(iloffset, unalignedPrefix, BitConverter.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; n += 5; break;
+                    case 0x80 /* stsfld */: StSFld(iloffset, volatilePrefix, BitConverter.ToUInt32(bytecode, n + 1)); volatilePrefix = false; n += 5; break;
+                    case 0x81 /* stobj */: StObj(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1, BitConverter.ToUInt32(bytecode, n + 1)); unalignedPrefix = false; volatilePrefix = false; n += 5; break;
                     case 0x82 /* conv.ovf.i1.un	*/: ConvOvfI1Un(iloffset); n++; break;
                     case 0x83 /* conv.ovf.i2.un	*/: ConvOvfI2Un(iloffset); n++; break;
                     case 0x84 /* conv.ovf.i4.un	*/: ConvOvfI4Un(iloffset); n++; break;
@@ -646,6 +672,7 @@ namespace Runic.CIL
                     case 0x98 /* ldelem.r4 */: LdElemR4(iloffset, noNullCheck, noRangeCheck); noNullCheck = false;noRangeCheck = false; n++; break;
                     case 0x99 /* ldelem.r8 */: LdElemR8(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9A /* ldelem.ref */: LdElemRef(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
+                    case 0x9B /* stelem.i */: StElemI(iloffset, noNullCheck, noRangeCheck);  noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9C /* stelem.i1 */: StElemI1(iloffset, noNullCheck, noRangeCheck);  noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9D /* stelem.i2 */: StElemI2(iloffset, noNullCheck, noRangeCheck);  noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0x9E /* stelem.i4 */: StElemI4(iloffset, noNullCheck, noRangeCheck);  noNullCheck = false; noRangeCheck = false; n++; break;
@@ -655,7 +682,7 @@ namespace Runic.CIL
                     case 0xA2 /* stelem.ref */: StElemRef(iloffset, noNullCheck, noRangeCheck); noNullCheck = false; noRangeCheck = false; n++; break;
                     case 0xA3 /* ldelem */: LdElem(iloffset, noNullCheck, noRangeCheck, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; noRangeCheck = false; n += 5; break;
                     case 0xA4 /* stelem */: StElem(iloffset, noNullCheck, noTypeCheck, noRangeCheck, BitConverter.ToUInt32(bytecode, n + 1)); noNullCheck = false; noTypeCheck = false; noRangeCheck = false; n += 5; break;
-                    case 0xA5 /* unbox.any*/: UnboxAny(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); ; n += 5; break;
+                    case 0xA5 /* unbox.any*/: UnboxAny(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
                     case 0xB3: /* conv.ovf.i1 */ ConvOvfI1(iloffset); n++; break;
                     case 0xB4: /* conv.ovf.u1 */ ConvOvfU1(iloffset); n++; break;
                     case 0xB5: /* conv.ovf.i2 */ ConvOvfI2(iloffset); n++; break;
@@ -679,10 +706,10 @@ namespace Runic.CIL
                     case 0xD9 /* mul.ovf.un */: MulOvfUn(iloffset); n++; break;
                     case 0xDA /* sub.ovf */: SubOvf(iloffset); n++; break;
                     case 0xDB /* sub.ovf.un */: SubOvfUn(iloffset); n++; break;
-                    case 0xDC /* endfault */: EndFault(iloffset); n++; break;
+                    case 0xDC /* endfinally */: EndFinally(iloffset); n++; break;
                     case 0xDD /* leave */: Leave(iloffset, n + BitConverter.ToInt32(bytecode, n + 1) + 5); n += 5; break;
                     case 0xDE /* leave.s */: Leave(iloffset, n + (sbyte)bytecode[n + 1] + 2); n += 2; break;
-                    case 0xDF /* stind.i */: StIndI(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
+                    case 0xDF /* stind.i */: StIndI(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); unalignedPrefix = false; volatilePrefix = false; n++; break;
                     case 0xE0 /* conv.u */: ConvU(iloffset); n++; break;
                     case 0xFE:
                         n++;
@@ -704,18 +731,28 @@ namespace Runic.CIL
                             case 0x0E /* stloc */: StLoc(iloffset, BitConverter.ToUInt16(bytecode, n + 1)); n += 3; break;
                             case 0x0F /* LocAlloc */: LocAlloc(iloffset); n++; break;
                             case 0x11 /* endfilter */: EndFilter(iloffset); n++; break;
-                            case 0x12 /* unaligned */: Nop(iloffset); unalignedPrefix = true; n++; break;
+                            case 0x12 /* unaligned */:
+                                switch (bytecode[n + 1])
+                                {
+                                    case 2: alignment = 2; break;
+                                    case 4: alignment = 4; break;
+                                    default: alignment = 1; break;
+                                }
+                                Nop(iloffset);
+                                unalignedPrefix = true;
+                                n += 2;
+                                break;
                             case 0x13 /* volatile */: Nop(iloffset); volatilePrefix = true; n++; break;
                             case 0x14 /* tail */: Nop(iloffset); tailPrefix = true; n++; break;
                             case 0x15 /* InitObj */: InitObj(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
                             case 0x16 /* constrained */: Nop(iloffset); constrainedType = BitConverter.ToUInt32(bytecode, n + 1); n += 5; break;
-                            case 0x17 /* cpblk */: CpBlk(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
-                            case 0x18 /* initblk */: InitBlk(iloffset, unalignedPrefix); unalignedPrefix = false; n++; break;
+                            case 0x17 /* cpblk */: CpBlk(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); volatilePrefix = false; unalignedPrefix = false; n++; break;
+                            case 0x18 /* initblk */: InitBlk(iloffset, volatilePrefix, unalignedPrefix ? alignment : -1); volatilePrefix = false; unalignedPrefix = false; n++; break;
                             case 0x19 /* no. */:
-                                n++;
-                                if ((bytecode[n] & 0x01) != 0) { noTypeCheck = true; }
-                                if ((bytecode[n] & 0x02) != 0) { noRangeCheck = true; }
-                                if ((bytecode[n] & 0x04) != 0) { noNullCheck = true; }
+                                if ((bytecode[n + 1] & 0x01) != 0) { noTypeCheck = true; }
+                                if ((bytecode[n + 1] & 0x02) != 0) { noRangeCheck = true; }
+                                if ((bytecode[n + 1] & 0x04) != 0) { noNullCheck = true; }
+                                n += 2;
                                 break;
                             case 0x1A /* rethrow */: Rethrow(iloffset); n++; break;
                             case 0x1C /* sizeof */: SizeOf(iloffset, BitConverter.ToUInt32(bytecode, n + 1)); n += 5; break;
