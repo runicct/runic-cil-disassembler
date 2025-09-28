@@ -49,7 +49,7 @@ static string CreateNuspec(string packageId, string version, string description,
     stringBuilder.AppendLine("</package>");
     return stringBuilder.ToString();
 }
-string version = "1.0.0";
+string version = "1.0.1";
 string currentExeDir = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(System.Environment.ProcessPath));
 string rootDir = System.IO.Path.GetFullPath(currentExeDir + "/../../../../..");
 string binDir = System.IO.Path.GetFullPath(rootDir + "/bin");
@@ -73,24 +73,24 @@ using (var fileStream = new FileStream(nupkgPath, FileMode.Create, FileAccess.Re
         var entry = zip.CreateEntry("Runic.CIL.Disassembler.nuspec", CompressionLevel.Optimal);
         using (var stream = entry.Open())
         {
-            var bytes = System.Text.Encoding.UTF8.GetBytes(CreateNuspec("Runic.CIL.Disassembler", "1.0.0", "This package is part of Runic Compiler Toolkit and provides a way to disassemble CIL programs", "cil msil il bytecode disassembler"));
+            var bytes = System.Text.Encoding.UTF8.GetBytes(CreateNuspec("Runic.CIL.Disassembler", version, "This package is part of Runic Compiler Toolkit and provides a way to disassemble CIL programs", "cil msil il bytecode disassembler"));
             stream.Write(bytes, 0, bytes.Length);
         }
-        entry = zip.CreateEntry("lib/net4.8/Runic.CIL.Disassembler.dll", CompressionLevel.Optimal);
+        entry = zip.CreateEntry("lib/net48/Runic.CIL.Disassembler.dll", CompressionLevel.Optimal);
         using (var stream = entry.Open())
         {
             byte[] bytes = File.ReadAllBytes(net48);
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        entry = zip.CreateEntry("lib/net6/Runic.CIL.Disassembler.dll", CompressionLevel.Optimal);
+        entry = zip.CreateEntry("lib/net6.0/Runic.CIL.Disassembler.dll", CompressionLevel.Optimal);
         using (var stream = entry.Open())
         {
             byte[] bytes = File.ReadAllBytes(net6);
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        entry = zip.CreateEntry("lib/net8/CLICC.CIL.Disassembler.dll", CompressionLevel.Optimal);
+        entry = zip.CreateEntry("lib/net8.0/Runic.CIL.Disassembler.dll", CompressionLevel.Optimal);
         using (var stream = entry.Open())
         {
             byte[] bytes = File.ReadAllBytes(net8);
