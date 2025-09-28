@@ -44,6 +44,7 @@ static string CreateNuspec(string packageId, string version, string description,
     stringBuilder.AppendLine("    <tags>runic runicct compiler construction toolkit " + tags + "</tags>");
     stringBuilder.AppendLine("    <license type=\"expression\">MIT</license>");
     stringBuilder.AppendLine("    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>");
+    stringBuilder.AppendLine("    <icon>runic_logo.png</icon>");
     stringBuilder.AppendLine("  </metadata>");
     stringBuilder.AppendLine("</package>");
     return stringBuilder.ToString();
@@ -60,6 +61,7 @@ Console.WriteLine("[INFO] Root directory: " + rootDir);
 string net6 = System.IO.Path.GetFullPath(rootDir + "/build/net6/bin/" + directoryName + "/net6.0/" + assemblyName);
 string net8 = System.IO.Path.GetFullPath(rootDir + "/build/net8/bin/" + directoryName + "/net8.0/" + assemblyName);
 string net48 = System.IO.Path.GetFullPath(rootDir + "/build/net48/bin/" + directoryName + "/" + assemblyName);
+string logo = System.IO.Path.GetFullPath(rootDir + "/runic_logo.png");
 
 Console.WriteLine("[INFO] Writing package at: " + nupkgPath);
 
@@ -91,7 +93,13 @@ using (var fileStream = new FileStream(nupkgPath, FileMode.Create, FileAccess.Re
         entry = zip.CreateEntry("lib/net8/CLICC.CIL.Disassembler.dll", CompressionLevel.Optimal);
         using (var stream = entry.Open())
         {
-            byte[] bytes = File.ReadAllBytes(net6);
+            byte[] bytes = File.ReadAllBytes(net8);
+            stream.Write(bytes, 0, bytes.Length);
+        }
+        entry = zip.CreateEntry("runic_logo.png", CompressionLevel.Optimal);
+        using (var stream = entry.Open())
+        {
+            byte[] bytes = File.ReadAllBytes(logo);
             stream.Write(bytes, 0, bytes.Length);
         }
     }
