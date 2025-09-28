@@ -8,7 +8,7 @@
     <RootNamespace>Runic.CIL.Disassembler</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Runic.CIL.Disassembler\BitConverterLE.cs" Link="BitConverterLE.cs" />
-    <Compile Include="..\Runic.CIL.Disassembler\Disassembler.cs" Link="Disassembler.cs" />
+    <Compile Include="..\..\src\BitConverterLE.cs" Link="BitConverterLE.cs" />
+    <Compile Include="..\..\src\Disassembler.cs" Link="Disassembler.cs" />
   </ItemGroup>
 </Project>

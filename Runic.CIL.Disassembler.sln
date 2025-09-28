@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36301.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler", "Runic.CIL.Disassembler\Runic.CIL.Disassembler.csproj", "{78B67CD3-F9CC-4FD0-A50A-072955CD2FA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler", "src\Runic.CIL.Disassembler.csproj", "{78B67CD3-F9CC-4FD0-A50A-072955CD2FA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -13,15 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net6", "Net6", "{B4788F6A-E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net8", "Net8", "{05F834C3-F641-41E8-8D95-9A24548C38A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Net48", "Runic.CIL.Disassembler.Net48\Runic.CIL.Disassembler.Net48.csproj", "{FDFD1E10-8804-4AA5-95FD-E59B67FA3BE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Net48", "build\net48\Runic.CIL.Disassembler.Net48.csproj", "{FDFD1E10-8804-4AA5-95FD-E59B67FA3BE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Net8", "Runic.CIL.Disassembler.Net8\Runic.CIL.Disassembler.Net8.csproj", "{A15ECAC0-B17A-462D-A68D-99FC55EB5255}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Net8", "build\net8\Runic.CIL.Disassembler.Net8.csproj", "{A15ECAC0-B17A-462D-A68D-99FC55EB5255}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassember.Net6", "Runic.CIL.Disassembler.Net6\Runic.CIL.Disassembler.Net6.csproj", "{E08E91A8-DF9E-477E-B7A7-0F5A75583820}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassember.Net6", "build\net6\Runic.CIL.Disassembler.Net6.csproj", "{E08E91A8-DF9E-477E-B7A7-0F5A75583820}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{0AA18D71-2C6A-446A-96F8-D9335DBF32BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Nuget", "Runic.CIL.Disassembler.Nuget\Runic.CIL.Disassembler.Nuget.csproj", "{37FB06AC-F3CE-4C73-A165-174CCE919384}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runic.CIL.Disassembler.Nuget", "build\nuget\Runic.CIL.Disassembler.Nuget.csproj", "{37FB06AC-F3CE-4C73-A165-174CCE919384}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A15ECAC0-B17A-462D-A68D-99FC55EB5255} = {A15ECAC0-B17A-462D-A68D-99FC55EB5255}
 		{E08E91A8-DF9E-477E-B7A7-0F5A75583820} = {E08E91A8-DF9E-477E-B7A7-0F5A75583820}

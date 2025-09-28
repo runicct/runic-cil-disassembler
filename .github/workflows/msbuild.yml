@@ -35,4 +35,4 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4.6.2
       with:
-        path: ./Runic.CIL.Disassembler.Nuget/bin/*/net8.0/*.nupkg
+        path: ./bin/*.nupkg

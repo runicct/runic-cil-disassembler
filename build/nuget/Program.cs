@@ -50,13 +50,16 @@ static string CreateNuspec(string packageId, string version, string description,
 }
 string version = "1.0.0";
 string currentExeDir = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(System.Environment.ProcessPath));
-string nupkgPath = System.IO.Path.GetFullPath(currentExeDir + "/runic.cil.disassembler." + version + ".nupkg");
+string rootDir = System.IO.Path.GetFullPath(currentExeDir + "/../../../../..");
+string binDir = System.IO.Path.GetFullPath(rootDir + "/bin");
+if (!System.IO.Directory.Exists(binDir)) { System.IO.Directory.CreateDirectory(binDir); }
+string nupkgPath = System.IO.Path.GetFullPath(binDir + "/runic.cil.disassembler." + version + ".nupkg");
 string directoryName = System.IO.Path.GetFileName(System.IO.Path.GetFullPath(currentExeDir + " /.."));
 string assemblyName = "Runic.CIL.Disassembler.dll";
-string rootDir = System.IO.Path.GetFullPath(currentExeDir + "/../../../..");
-string net6 = System.IO.Path.GetFullPath(rootDir + "/Runic.CIL.Disassembler.Net6/bin/" + directoryName + "/net6.0/" + assemblyName);
-string net8 = System.IO.Path.GetFullPath(rootDir + "/Runic.CIL.Disassembler.Net8/bin/" + directoryName + "/net8.0/" + assemblyName);
-string net48 = System.IO.Path.GetFullPath(rootDir + "/Runic.CIL.Disassembler.Net48/bin/" + directoryName + "/" + assemblyName);
+Console.WriteLine("[INFO] Root directory: " + rootDir);
+string net6 = System.IO.Path.GetFullPath(rootDir + "/build/net6/bin/" + directoryName + "/net6.0/" + assemblyName);
+string net8 = System.IO.Path.GetFullPath(rootDir + "/build/net8/bin/" + directoryName + "/net8.0/" + assemblyName);
+string net48 = System.IO.Path.GetFullPath(rootDir + "/build/net48/bin/" + directoryName + "/" + assemblyName);
 
 Console.WriteLine("[INFO] Writing package at: " + nupkgPath);
 
